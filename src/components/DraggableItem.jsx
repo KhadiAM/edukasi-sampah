@@ -17,17 +17,17 @@ export default function DraggableItem({ id, name, icon, type, darkMode }) {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100px',
-    height: '100px',
-    padding: '10px',
-    cursor: 'grab',
+    width: '80px',
+    height: '80px',
+    padding: '8px',
+    cursor: transform ? 'grabbing' : 'grab',
     transition: transform ? 'none' : 'all 0.2s'
   };
 
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <span style={{ fontSize: '36px', marginBottom: '4px', pointerEvents: 'none' }}>{icon}</span>
-      <span style={{ fontWeight: '900', fontSize: '9px', textAlign: 'center', textTransform: 'uppercase', pointerEvents: 'none', lineHeight: '1', maxWidth: '100%' }}>{name}</span>
+      <span style={{ fontSize: '30px', marginBottom: '2px', pointerEvents: 'none' }}>{icon}</span>
+      <span style={{ fontWeight: '900', fontSize: '8px', textAlign: 'center', textTransform: 'uppercase', pointerEvents: 'none', lineHeight: '1', maxWidth: '100%' }}>{name}</span>
     </div>
   );
 }
