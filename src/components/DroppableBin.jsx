@@ -13,14 +13,14 @@ export default function DroppableBin({ id, label, subLabel, color, acceptedType,
   };
 
   return (
-    <div ref={setNodeRef} style={{ position: 'relative', width: '220px', height: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: '0.2s', transform: isOver ? 'scale(1.05)' : 'scale(1)' }}>
-      <div style={{ backgroundColor: getBinColor(), width: '190px', height: '30px', borderRadius: '40px 40px 0 0', border: '4px solid #000', marginBottom: '-4px', zIndex: 10 }}></div>
-      <div style={{ backgroundColor: getBinColor(), width: '100%', height: '100%', borderRadius: '0 0 40px 40px', border: '4px solid #000', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px', boxShadow: '8px 8px 0px rgba(0,0,0,0.5)' }}>
-        <div style={{ backgroundColor: darkMode ? '#0f172a' : '#fff', border: '4px solid #000', padding: '5px 20px', borderRadius: '15px', marginBottom: '15px' }}>
-          <span style={{ fontWeight: '900', fontSize: '14px', color: darkMode ? '#38bdf8' : '#000' }}>{label}</span>
+    <div ref={setNodeRef} className={`relative flex flex-col items-center transition-transform duration-200 ${isOver ? 'scale-105' : 'scale-100'} w-[30%] sm:w-[150px] md:w-[220px] h-[180px] sm:h-[200px] md:h-[280px]`}>
+      <div style={{ backgroundColor: getBinColor() }} className="w-[85%] md:w-[190px] h-[15px] md:h-[30px] rounded-t-3xl md:rounded-t-[40px] border-[2px] md:border-4 border-black -mb-[2px] md:-mb-1 z-10"></div>
+      <div style={{ backgroundColor: getBinColor() }} className="w-full h-full rounded-b-3xl md:rounded-b-[40px] border-[2px] md:border-4 border-black flex flex-col items-center pt-2 md:pt-5 shadow-[4px_4px_0px_rgba(0,0,0,0.5)] md:shadow-[8px_8px_0px_rgba(0,0,0,0.5)]">
+        <div className={`border-[2px] md:border-4 border-black px-1 py-0 md:px-5 md:py-1 rounded-lg md:rounded-2xl mb-1 md:mb-4 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <span className={`font-black text-[8px] sm:text-[10px] md:text-sm ${darkMode ? 'text-sky-400' : 'text-black'}`}>{label}</span>
         </div>
-        <div style={{ backgroundColor: darkMode ? '#0f172a' : '#fff', border: '3px solid #000', padding: '8px', borderRadius: '12px', width: '85%' }}>
-          <p style={{ fontWeight: '900', fontSize: '11px', textAlign: 'center', margin: 0, color: darkMode ? '#38bdf8' : '#000' }}>{subLabel}</p>
+        <div className={`border-[2px] md:border-3 border-black p-1 md:p-2 rounded-lg md:rounded-xl w-[90%] md:w-[85%] ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <p className={`font-black text-[6px] sm:text-[8px] md:text-[11px] text-center m-0 leading-tight ${darkMode ? 'text-sky-400' : 'text-black'}`}>{subLabel}</p>
         </div>
       </div>
     </div>

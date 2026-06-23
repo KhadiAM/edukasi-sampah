@@ -10,6 +10,7 @@ export default function GameBoard({ darkMode, level, setLevel }) {
   const [feedback, setFeedback] = useState("Ayo bersihkan sekolah! 💪");
   const [lastFact, setLastFact] = useState("Tarik sampah ke tong yang benar ya!");
   const [isGameFinished, setIsGameFinished] = useState(false);
+  const [lives, setLives] = useState(3);
 
   // FUNGSI SUARA (Pastikan file ada di folder /public)
   const playSound = (isSuccess) => {
@@ -48,6 +49,7 @@ export default function GameBoard({ darkMode, level, setLevel }) {
     setLevel(1);
     setIsGameFinished(false);
     setLastFact("Tarik sampah ke tong yang benar ya!");
+    setLives(3);
     initLevel(1);
   };
 
@@ -81,27 +83,59 @@ export default function GameBoard({ darkMode, level, setLevel }) {
     } else {
       // SUARA SALAH
       playSound(false);
-      setFeedback("UPS! TEMPATNYA SALAH.. ❌");
+      setLives(prev => {
+        const newLives = prev - 1;
+        if (newLives <= 0) {
+          setItems([]); // Kosongkan item sementara biar tidak bisa di-drag lagi
+          setFeedback("KAMU KEHABISAN NYAWA! 😭 MULAI LAGI DARI LEVEL 1");
+          setTimeout(() => {
+            setScore(0);
+            setLevel(1);
+            setLives(3);
+            setLastFact("Tarik sampah ke tong yang benar ya!");
+            setIsGameFinished(false);
+            initLevel(1);
+          }, 2500);
+        } else {
+          setFeedback("UPS! TEMPATNYA SALAH.. ❌");
+        }
+        return newLives <= 0 ? 0 : newLives;
+      });
     }
   };
 
   return (
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto px-4">
-      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div style={{ backgroundColor: darkMode ? '#7f1d1d' : '#ef4444', border: '4px solid #000', borderRadius: '2rem', padding: '20px', color: '#fff', textAlign: 'center', boxShadow: '8px 8px 0px #000' }}>
-          <p style={{ fontWeight: '900', fontSize: '12px' }}>LEVEL: {level} | SKOR</p>
-          <p style={{ fontWeight: '900', fontSize: '55px', margin: 0 }}>{score}</p>
+      <div className="w-full flex flex-col md:flex-row gap-4 mb-4 md:mb-8">
+        <div className={`flex-1 ${darkMode ? 'bg-red-900' : 'bg-red-500'} border-4 border-black rounded-3xl p-3 md:p-5 text-white shadow-[4px_4px_0px_#000] md:shadow-[8px_8px_0px_#000]`}>
+          <div className="flex justify-around items-center h-full">
+            <div className="text-center">
+              <p className="font-black text-[10px] md:text-sm m-0 tracking-widest">LEVEL: {level}</p>
+              <p className="font-black text-3xl md:text-5xl m-0 leading-none">{score}</p>
+            </div>
+            <div className="text-center flex flex-col items-center">
+              <p className="font-black text-[10px] md:text-sm m-0 tracking-widest">NYAWA</p>
+              <div className="text-xl md:text-3xl mt-1 tracking-widest flex gap-1 bg-white/30 px-3 py-1 rounded-full shadow-inner">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} style={{ 
+                    opacity: i < lives ? 1 : 0.3, 
+                    filter: i < lives ? 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))' : 'grayscale(100%)' 
+                  }}>❤️</span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style={{ backgroundColor: darkMode ? '#1e293b' : '#fff', border: '4px solid #000', borderRadius: '2rem', padding: '30px', boxShadow: '8px 8px 0px #000', display: 'flex', alignItems: 'center', justifyContent: 'center', gridColumn: 'span 2' }}>
-          <p style={{ fontWeight: '900', fontSize: '22px', textAlign: 'center', margin: 0, color: darkMode ? '#38bdf8' : '#1e3a8a' }}>💡 {lastFact}</p>
+        <div className={`flex-[2] ${darkMode ? 'bg-slate-800 text-sky-400' : 'bg-white text-blue-900'} border-4 border-black rounded-3xl p-4 md:p-6 shadow-[4px_4px_0px_#000] md:shadow-[8px_8px_0px_#000] flex items-center justify-center`}>
+          <p className="font-black text-sm md:text-2xl text-center m-0 leading-tight">💡 {lastFact}</p>
         </div>
       </div>
 
-      <p style={{ color: darkMode ? '#38bdf8' : '#1e3a8a', fontSize: '28px', fontWeight: '900', marginBottom: '30px', textAlign: 'center' }}>{feedback}</p>
+      <p className={`font-black text-lg md:text-2xl mb-4 md:mb-8 text-center ${darkMode ? 'text-sky-400' : 'text-blue-900'}`}>{feedback}</p>
 
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="flex flex-wrap justify-center gap-10 mb-20">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-10 mb-6 md:mb-12 w-full">
           <DroppableBin id="b-org" label="ORGANIK" subLabel="Sisa makanan & daun" color="#4ade80" acceptedType="organik" darkMode={darkMode} />
           <DroppableBin id="b-ano" label="ANORGANIK" subLabel="Plastik & kaleng" color="#fbbf24" acceptedType="anorganik" darkMode={darkMode} />
           {level === 2 && (
@@ -109,9 +143,14 @@ export default function GameBoard({ darkMode, level, setLevel }) {
           )}
         </div>
 
-        <div style={{ backgroundColor: darkMode ? '#111827' : '#fff', border: '4px dashed #64748b', borderRadius: '4rem', padding: '40px', minHeight: '350px', width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '20px', boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.3)' }}>
+        <div className={`w-full flex flex-wrap justify-center items-center gap-3 md:gap-5 min-h-[150px] md:min-h-[350px] p-4 md:p-10 border-4 border-dashed border-slate-500 rounded-[2rem] md:rounded-[4rem] shadow-[inset_0_4px_20px_rgba(0,0,0,0.3)] ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
           {items.length > 0 ? (
             items.map(item => <DraggableItem key={item.id} {...item} darkMode={darkMode} />)
+          ) : lives <= 0 ? (
+            <div style={{ textAlign: 'center' }}>
+              <h2 style={{ fontSize: '40px', fontWeight: '900', color: '#ef4444', marginBottom: '10px', textShadow: '4px 4px 0px #000' }} className="text-red-500">GAME OVER! 😭</h2>
+              <p style={{ color: darkMode ? '#fff' : '#475569', fontWeight: '900', fontSize: '20px' }}>Sedang mengulang dari Level 1...</p>
+            </div>
           ) : (
             <div style={{ textAlign: 'center' }}>
               {!isGameFinished ? (
